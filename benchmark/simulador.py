@@ -2,8 +2,8 @@
 from mapas.mapas import *
 
 from metodos.fuego import *
-from metodos.costo_uniforme import *
 from metodos.BFS import *
+from metodos.DFS import*
 
 from enum import Enum
 import random
@@ -12,7 +12,7 @@ import random
 
 class Metodo(Enum):
     BFS= 1
-    COSTO_UNIFORME = 2
+    DFS = 2
     GREEDY_BFS= 3
     A_ESTRELLA = 4
     GENETICO = 5
@@ -129,9 +129,9 @@ def obtener_metodo(metodo):
 
     match metodo:
 
-        case Metodo.COSTO_UNIFORME:
+        case Metodo.DFS:
 
-            return Agente_CU,iterar_CU
+            return Agente_DFS,iterar_DFS
 
         case Metodo.BFS:
 

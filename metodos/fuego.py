@@ -8,10 +8,10 @@ class Fuego:
     def __init__(self, mapa, inicio):
         self.mapa = mapa
         self.cola = deque()
-        self.visitados = set()
+        self.descubiertos = set()
 
         self.cola.append(inicio)
-        self.visitados.add(inicio)
+        self.descubiertos.add(inicio)
 
         # posicion actual del frente del fuego
 
@@ -51,7 +51,7 @@ def iteracionFuego(fuego):
 
             nueva_posicion = (nueva_x, nueva_y)
 
-            if nueva_posicion not in fuego.visitados:
+            if nueva_posicion not in fuego.descubiertos:
 
-                fuego.visitados.add(nueva_posicion)
+                fuego.descubiertos.add(nueva_posicion)
                 fuego.cola.append(nueva_posicion)

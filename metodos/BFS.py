@@ -12,12 +12,12 @@ class Agente_BFS:
         self.vivo = True
 
         # cola de posiciones que BFS todavia debe explorar
-        self.por_visitar = deque()
-        self.por_visitar.append(posicion_inicial)
+        self.cola = deque()
+        self.cola.append(posicion_inicial)
 
         # posiciones que ya fueron descubiertas
-        self.visitados = set()
-        self.visitados.add(posicion_inicial)
+        self.descubiertos = set()
+        self.descubiertos.add(posicion_inicial)
 
         self.posicion_actual = posicion_inicial
 
@@ -40,7 +40,7 @@ def iterar_BFS(agente):
     # si no quedan posiciones por terminar el agente se da por muerto (no consiguio escapar
     # dado que el fuego bloqueo la salida) y la iteracion termina
 
-    if not agente.por_visitar:
+    if not agente.cola:
         agente.finalizado = True
         agente.vivo = False
 
@@ -53,9 +53,9 @@ def iterar_BFS(agente):
 
 
     # se saca la siguiente posicion de la cola
-    x, y = agente.por_visitar.popleft()
+    x, y = agente.cola.popleft()
 
-    #se actualiza la posicion del agente y se agrega a la nueva celda y se elimina de la
+    #se actualiza la posicion del agente, se agrega a la nueva celda y se elimina de la
     #anterior
     mover(agente,(x,y))
 
@@ -88,10 +88,10 @@ def iterar_BFS(agente):
 
             # no entrar a fuego, muros ni posiciones ya visitadas
             if (not nueva_celda.fuego and not nueva_celda.muro
-                    and nueva_posicion not in agente.visitados):
+                    and nueva_posicion not in agente.descubiertos):
 
-                agente.visitados.add(nueva_posicion)
-                agente.por_visitar.append(nueva_posicion)
+                agente.descubiertos.add(nueva_posicion)
+                agente.cola.append(nueva_posicion)
 
 
 
