@@ -1,7 +1,9 @@
 
 from mapas.mapas import *
 
+from metodos.fuego import *
 from metodos.costo_uniforme import *
+from metodos.BFS import *
 
 from enum import Enum
 import random
@@ -25,25 +27,63 @@ def simulacion(matriz,metodo):
 
     posiciones_y = obtener_columnas()  #posiciones en y de los agentes
 
+    agentes = [] #lista de agentes
 
-    agentes = [agente(mapa,(29,posiciones_y[0])), agente(mapa, (29, posiciones_y[1])),
-               agente(mapa, (29, posiciones_y[2])), agente(mapa, (29, posiciones_y[3])),
-               agente(mapa, (29, posiciones_y[4]))]
+    for i in range(5): #se insertan los 5 agentes en la lista
+        agentes.append(agente(mapa,(29,posiciones_y[i])))
 
+    #4 focos de fuego
+
+    fuegos = []
+
+    for i in range(5): #se insertan los 5 focos de fuego en la lista
+        fuegos.append(Fuego(mapa,(random.randint(2, 27), random.randint(2, 27))))
+
+
+    # lleva la cuenta de la cantidad de turnos que ha durado la simulacion
+
+    turnos_simulacion = 1
+
+    turnos_fuego = 3
 
     #ciclo de la simulacion
-
     while True:
 
-        iteracion(agentes[0])
-        iteracion(agentes[1])
-        iteracion(agentes[2])
-        iteracion(agentes[3])
-        iteracion(agentes[4])
+        print("\n##############################", flush=True)
 
-        imprimir_matriz(mapa)
+        print("turno: " , turnos_simulacion)
+
+
+        if (turnos_fuego == 0):
+            for fuego in fuegos: #cada foco de fuego hace una iteracion
+                iteracionFuego(fuego)
+
+            turnos_fuego = 3
+
+        # cada agente hace una iteracion si es que su estado no esta finalizado
+        for agente in agentes:
+
+            if agente.finalizado == False:
+                iteracion(agente)
+
+
+
+        #la cantidad de turnos para la proxima propagacion del fuego disminuye en 1
+
+        turnos_fuego-=1
+
+
+        turnos_simulacion += 1
+
+
+        #se cuenta la cantidad de agentes finalizados, si finalizaron los 5
+        #la simulacion termina
 
         numero_finalizados = 0
+
+        #cantidad de agentes que lograron escapar
+
+        numero_supervivientes = 0
 
         for agente in agentes:
 
@@ -51,9 +91,36 @@ def simulacion(matriz,metodo):
 
                 numero_finalizados+=1
 
+                if agente.vivo == True:
+
+                    numero_supervivientes+=1
+
+
+        for i, agente in enumerate(agentes):
+            print(
+                i,
+                "pos:", agente.posicion_actual,
+                "finalizado:", agente.finalizado,
+                "vivo:", agente.vivo
+            )
+
+
+
+        imprimir_matriz(mapa)
+
+        print("\nnumero de agentes finalizados: " + str(numero_finalizados))
+
+        print("numero de agentes supervivientes: " + str(numero_supervivientes) + "\n")
+
         if numero_finalizados == 5:
 
-            return
+            return numero_supervivientes, turnos_simulacion
+
+
+
+        #input()
+
+
 
 
 
@@ -64,7 +131,11 @@ def obtener_metodo(metodo):
 
         case Metodo.COSTO_UNIFORME:
 
-            return AgenteCU,iterarCU
+            return Agente_CU,iterar_CU
+
+        case Metodo.BFS:
+
+            return Agente_BFS,iterar_BFS
 
 
 
@@ -73,7 +144,6 @@ def obtener_metodo(metodo):
 
     #case Metodo.A_ESTRELLA:
     #    return AgeneA_ESTRELLA, iterarA_ESTRELLA
-
 
 
 

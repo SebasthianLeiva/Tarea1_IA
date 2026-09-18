@@ -1,19 +1,23 @@
 
 
 
-class AgenteCU:
+class Agente_CU:
 
-    def __init__(self, mapa,posicion_inicial):
+    def __init__(self, mapa, posicion_inicial):
 
         self.mapa = mapa
-
-        self.posicion_inicial
+        self.posicion_inicial = posicion_inicial
+        self.finalizado = False
+        self.vivo = True
 
 
 
 
 #una iteracion del metodo costo uniforme
 
-def iterarCU():
+def iterar_CU():
 
     print()
+
+
+

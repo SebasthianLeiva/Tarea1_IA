@@ -8,10 +8,11 @@ class Celda:
         self.fuego = False
         self.agentes = []
 
-        #el costo de la celda depende de la cantidad de agentes en ella, se utiliza
-        #una funcion lineal
-
-        self.costo = costo_base + 2*len(self.agentes)
+    # el costo de la celda depende de la cantidad de agentes en ella, se utiliza
+    # una funcion lineal
+    @property
+    def costo(self):
+        return self.costo_base + 2 * len(self.agentes)
 
 
 #NOMENCLATURA DE MAPAS:
@@ -72,7 +73,7 @@ def obtener_mapa(matriz):
                 nueva_fila.append(Celda(0,muro=True))
 
             elif valor == 6:
-                nueva_fila.append(Celda(0, salida=True))
+                nueva_fila.append(Celda(1, salida=True))
 
             else:
                 nueva_fila.append(Celda(valor))
@@ -94,11 +95,26 @@ def imprimir_matriz(mapa):
 
         for y in range(len(mapa[x])):
 
+            #CAMBIAR EL FUEGO Y EL AGENTE
+
             # si la casilla tiene un agente en ella se imprime de color azul
 
             if mapa[x][y].agentes:
 
-                print("\033[34m"+str(mapa[x][y].costo)+"\033[0m", end="")
+                print("\033[34m" + str(mapa[x][y].costo) + "\033[0m", end="")
+
+
+            #si el fuego llega a la casilla del agente entonces se imprime el fuego y no
+            #el agente, esto puede pasar por que solo verificamos que los vecinos no
+            #tengan fuego, y en el lapso en que un vecino entra a la cola y sale esta
+            #casilla se puede haber quemado
+
+            elif mapa[x][y].fuego == True:
+
+                print("\033[31m" + str(mapa[x][y].costo) + "\033[0m", end="")
+
+
+
 
             # muro (gris)
 
@@ -112,12 +128,11 @@ def imprimir_matriz(mapa):
 
                 print("\033[32ms\033[0m", end="")
 
-
             # casilla habilitada sin agente en ella
 
             else:
 
                 print("\033[33m"+str(mapa[x][y].costo)+"\033[0m", end="")
 
-        print()
+        print(flush=True)
 
