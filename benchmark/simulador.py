@@ -4,6 +4,7 @@ from mapas.mapas import *
 from metodos.fuego import *
 from metodos.BFS import *
 from metodos.DFS import*
+from metodos.greedyBFS import*
 
 from enum import Enum
 import random
@@ -136,6 +137,10 @@ def obtener_metodo(metodo):
         case Metodo.BFS:
 
             return Agente_BFS,iterar_BFS
+
+        case Metodo.GREEDY_BFS:
+
+            return Agente_greedyBFS,iterar_greedyBFS
 
 
 

@@ -44,7 +44,7 @@ def iterar_BFS(agente):
         agente.finalizado = True
         agente.vivo = False
 
-        #se elimina de su posicion actual
+        #se elimina de su celda actual
 
         x, y = agente.posicion_actual
         agente.mapa[x][y].agentes.remove(agente)
