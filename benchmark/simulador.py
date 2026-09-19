@@ -5,9 +5,11 @@ from metodos.fuego import *
 from metodos.BFS import *
 from metodos.DFS import*
 from metodos.greedyBFS import*
+from metodos.a_estrella import *
 
 from enum import Enum
 import random
+
 
 
 
@@ -141,6 +143,10 @@ def obtener_metodo(metodo):
         case Metodo.GREEDY_BFS:
 
             return Agente_greedyBFS,iterar_greedyBFS
+
+        case Metodo.A_ESTRELLA:
+
+            return Agente_a_estrella,iterar_a_estrella
 
 
 
