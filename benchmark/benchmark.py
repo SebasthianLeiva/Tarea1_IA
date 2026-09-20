@@ -13,7 +13,7 @@ def benchmark():
     #se obtiene la cantidad de agentes vivos tras la simulacion, y la cantidad de turnos
     #que le tomo al ultimo escapar
 
-    num_vivos, cant_turnos = simulacion(alta_densidad(),Metodo.A_ESTRELLA)  #simulacion de costo uniforme
+    num_vivos, cant_turnos = simulacion(alta_densidad(),Metodo.GENETICO)  #simulacion de costo uniforme
 
     print("numero de agentes vivos: " + str(num_vivos ))
     print("cantidad de turnos totales: " + str(cant_turnos))

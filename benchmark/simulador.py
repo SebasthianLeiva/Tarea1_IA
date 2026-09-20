@@ -6,6 +6,7 @@ from metodos.BFS import *
 from metodos.DFS import*
 from metodos.greedyBFS import*
 from metodos.a_estrella import *
+from metodos.genetico import *
 
 from enum import Enum
 import random
@@ -28,12 +29,17 @@ def simulacion(matriz,metodo):
 
     agente,iteracion = obtener_metodo(metodo)
 
-    posiciones_y = obtener_columnas()  #posiciones en y de los agentes
+    if agente != Agente_genetico:
+        posiciones_y = obtener_columnas()  #posiciones en y de los agentes
 
-    agentes = [] #lista de agentes
+        agentes = []  # lista de agentes
 
-    for i in range(5): #se insertan los 5 agentes en la lista
-        agentes.append(agente(mapa,(29,posiciones_y[i])))
+        for i in range(5):  # se insertan los 5 agentes en la lista
+            agentes.append(agente(mapa, (29, posiciones_y[i])))
+
+    else:
+        agentes = obtener_geneticos(mapa)
+
 
     #4 focos de fuego
 
@@ -119,10 +125,7 @@ def simulacion(matriz,metodo):
 
             return numero_supervivientes, turnos_simulacion
 
-
-
         #input()
-
 
 
 
@@ -147,6 +150,13 @@ def obtener_metodo(metodo):
         case Metodo.A_ESTRELLA:
 
             return Agente_a_estrella,iterar_a_estrella
+
+        case Metodo.GENETICO:
+
+            return Agente_genetico,iterar_genetico
+
+
+
 
 
 
