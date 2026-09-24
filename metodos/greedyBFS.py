@@ -1,10 +1,8 @@
 
 import heapq
 
-from .agente import *
-from .distancia_manhattan import distancia_manhattan
-
-from mapas import mapas
+from metodos.general.agente import *
+from metodos.general.distancia_manhattan import distancia_manhattan
 
 
 class Agente_greedyBFS:

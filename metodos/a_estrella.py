@@ -1,11 +1,9 @@
 
 import heapq
 
-from .agente import *
-from .distancia_manhattan import distancia_manhattan
+from metodos.general.agente import *
+from metodos.general.distancia_manhattan import distancia_manhattan
 import random
-
-from mapas import mapas
 
 
 class Agente_a_estrella:
@@ -16,11 +14,12 @@ class Agente_a_estrella:
         self.finalizado = False
         self.vivo = True
 
-        # frontera
+        # lista de casillas frontera, guarda como elementos tuplas, para que puedan
+        #comparadas por heapq.heappush() y distinguir la menor
         self.frontera = []
 
         # contador utilizado para desempatar elementos de la cola de prioridad
-        self.contador = 0
+        self.contador = 0 #inicia en 0 por ser la primera celda
 
         heuristica_inicial = (
             distancia_manhattan(posicion_inicial, self.mapa)
@@ -30,28 +29,30 @@ class Agente_a_estrella:
         x, y = posicion_inicial
         celda_inicial = mapa[x][y]
 
-        # se agrega el elemento:
-        # f, g, contador, celda, posicion, padre
+        # se agrega el elemento: (f, g, contador, celda, posicion)
         # siguiendo el orden de una cola de prioridad
         heapq.heappush(
             self.frontera,
             (
-                heuristica_inicial,
-                0,
-                self.contador,
-                celda_inicial,
-                posicion_inicial,
-                -1
+
+                # funcion costo total: heuristica + costo_inicial
+                heuristica_inicial, #iniciada como h al ser el costo acumulado 0
+
+                0, #costo acumulado
+
+                self.contador,  #para que al sacar un elemento de la pq habiendo
+                #dos elementos con mismo costo acumulado y heuristica, se elija el
+                #que tenga menor contador en vez de tener que comparar la celda,
+                #el cual es el siguiente elemento de la tupla
+
+                celda_inicial, #celda
+
+                posicion_inicial #posicion
+
             )
         )
 
         self.contador += 1
-
-        # diccionario que guarda el padre de los nodos explorados
-
-        # el inicial no tiene padre por lo que el valor de su padre se coloca como
-        # -1
-        self.padres = {posicion_inicial: -1}
 
         self.explorados = []
 
@@ -86,25 +87,20 @@ def iterar_a_estrella(agente):
     numero_random = random.randint(1, 100)
 
     # con baja probabilidad el agente ejecuta la accion de pasar por el turno (esperar)
-    #lo que permite que la casilla con menor funcion costo total se actualice al siguiente
-    #en caso de descongestionarse la actual
 
-    if numero_random <= 15:
+    if numero_random <= 5:
         return
 
-    # se saca el nodo de la frontera con menor costo
-    mejor_nodo = heapq.heappop(agente.frontera)
+    # se saca la tupla (casilla) de la frontera con menor costo
+    mejor_casilla = heapq.heappop(agente.frontera)
 
-    f, costo_acumulado, _, nueva_celda, nueva_posicion, padre = mejor_nodo
+    f, costo_acumulado, _, nueva_celda, nueva_posicion= mejor_casilla
 
     # si la posicion ya fue explorada se ignora esta ruta
     if nueva_posicion in agente.explorados:
         return
 
-    # se guarda el padre de la ruta que resulto ser la mejor
-    agente.padres[nueva_posicion] = padre
-
-    # el agente se mueve al nodo de la frontera con menor costo
+    # el agente se mueve a la celda de la frontera con menor costo
     mover(agente, nueva_posicion)
 
     # se comprueba si encontro la salida
@@ -149,11 +145,10 @@ def iterar_a_estrella(agente):
                     agente.mapa
                 )
 
-                # se obtiene el costo acumulado desde el origen hasta el nodo vecino
+                # se obtiene el costo acumulado desde el origen hasta la celda vecina
                 costo_nuevo = costo_acumulado + nueva_celda.costo
 
-                # se agrega el nuevo nodo a la frontera
-                # se guarda tambien el padre que corresponde a esta ruta
+                # se agrega la nueva celda a la frontera
                 heapq.heappush(
                     agente.frontera,
                     (
@@ -161,8 +156,7 @@ def iterar_a_estrella(agente):
                         costo_nuevo,
                         agente.contador,
                         nueva_celda,
-                        nueva_posicion,
-                        agente.posicion_actual
+                        nueva_posicion
                     )
                 )
 

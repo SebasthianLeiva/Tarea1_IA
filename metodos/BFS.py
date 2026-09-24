@@ -1,7 +1,6 @@
 
 from collections import deque
-from platform import android_ver
-from .agente import *
+from metodos.general.agente import *
 
 class Agente_BFS:
 

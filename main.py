@@ -1,10 +1,13 @@
 
 from benchmark.benchmark import *
+from benchmark.simulador import *
+from benchmark.simulador import Metodo
 
 
 def main():
 
-   benchmark()
+   #benchmark()
 
+   simulacion(alta_densidad(),Metodo.GENETICO)
 
 main()

@@ -1,7 +1,6 @@
 
 import random
-from mapas.mapas import *
-from .agente import *
+from metodos.general.agente import *
 
 class Agente_genetico:
 
@@ -15,7 +14,8 @@ class Agente_genetico:
 
         # cromosoma
         self.movimientos = []
-        inicializar_movimientos(self.movimientos, 60)
+        #120 movimientos para cada agente
+        inicializar_movimientos(self.movimientos, 120)
 
         self.pos_movimientos = 0
 
@@ -256,7 +256,7 @@ def generar_hijo(padre1, padre2, cant_padre1):
 
 def mutacion(lista_hijos):
 
-    movimientos_posibles = ["arriba","abajo","izquierda","derecha","esperar"]
+    movimientos_posibles = ["arriba","abajo","izquierda","derecha"]
 
     for hijo in lista_hijos:
 
@@ -264,7 +264,7 @@ def mutacion(lista_hijos):
         if random.random() < 0.20:
 
             # se elije que movimiento cambiar
-            posicion = random.randint(0, 59)
+            posicion = random.randint(0, len(hijo.movimientos) - 1)
 
             # se elije el nuevo movimiento
             nuevo_movimiento = random.choice(movimientos_posibles)
@@ -278,28 +278,25 @@ def mutacion(lista_hijos):
 
 
 def inicializar_movimientos(lista_movs,cantidad_movimientos):
+    movimientos = [
+        "arriba",
+        "izquierda",
+        "derecha",
+        "abajo"
+    ]
 
     i = 0
+
     while i < cantidad_movimientos:
 
-        numero = random.randint(1, 5)
+        #se agrega un movimiento aleatorio de "movimientos" a la lista_movs
+        numero = random.randint(0, 3)
+        lista_movs.append(movimientos[numero])
 
-        if numero==1:
-            lista_movs.append("arriba")
+        i += 1
 
-        elif numero==2:
-            lista_movs.append("izquierda")
 
-        elif numero==3:
-            lista_movs.append("derecha")
 
-        elif numero==4:
-            lista_movs.append("abajo")
-
-        elif numero==5:
-            lista_movs.append("esperar")
-
-        i+=1
 
 
 #retorna columans de posicion inicial para los 100 agentes

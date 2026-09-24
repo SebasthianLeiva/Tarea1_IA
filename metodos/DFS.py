@@ -1,5 +1,5 @@
 
-from .agente import *
+from metodos.general.agente import *
 
 
 class Agente_DFS:

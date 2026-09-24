@@ -1,7 +1,7 @@
 
 from mapas.mapas import *
 
-from metodos.fuego import *
+from metodos.general.fuego import *
 from metodos.BFS import *
 from metodos.DFS import*
 from metodos.greedyBFS import*
@@ -53,7 +53,15 @@ def simulacion(matriz,metodo):
 
     turnos_simulacion = 1
 
+    #la cantidad de turnos que le tomo al ultimo superviviente escapar
+    turnos_ultimo_superviviente = 0
+
     turnos_fuego = 3
+
+    #guarda los agentes supervivientes y el turno en el que salieron en orden ascendente de
+    # izquierda a derecha
+
+    supervivientes = []
 
     #ciclo de la simulacion
     while True:
@@ -104,6 +112,10 @@ def simulacion(matriz,metodo):
 
                     numero_supervivientes+=1
 
+                    if agente not in supervivientes:
+                        supervivientes.append((agente,turnos_simulacion))
+
+
 
         for i, agente in enumerate(agentes):
             print(
@@ -123,7 +135,14 @@ def simulacion(matriz,metodo):
 
         if numero_finalizados == 5:
 
-            return numero_supervivientes, turnos_simulacion
+            if(supervivientes):
+                # se retorna el numero de supervivientes y los turnos que le tomo al ultimo
+                #salir
+                return numero_supervivientes, supervivientes[-1][1]
+
+            else:
+
+                return 0, 0
 
         #input()
 
@@ -154,17 +173,6 @@ def obtener_metodo(metodo):
         case Metodo.GENETICO:
 
             return Agente_genetico,iterar_genetico
-
-
-
-
-
-
-    #TODO: añadir los casos de los demas metodos
-
-
-    #case Metodo.A_ESTRELLA:
-    #    return AgeneA_ESTRELLA, iterarA_ESTRELLA
 
 
 
