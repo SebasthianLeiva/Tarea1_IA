@@ -36,10 +36,23 @@ def iterar_BFS(agente):
         return
 
 
+    while agente.cola:
+
+        # se saca la siguiente posicion de la cola
+        x, y = agente.cola.popleft()
+
+        nueva_celda = agente.mapa[x][y]
+
+        # la posicion pudo incendiarse mientras estaba en la cola
+        if nueva_celda.fuego:
+            continue
+
+        break
+
     # si no quedan posiciones por terminar el agente se da por muerto (no consiguio escapar
     # dado que el fuego bloqueo la salida) y la iteracion termina
 
-    if not agente.cola:
+    else:
         agente.finalizado = True
         agente.vivo = False
 
@@ -50,9 +63,6 @@ def iterar_BFS(agente):
 
         return
 
-
-    # se saca la siguiente posicion de la cola
-    x, y = agente.cola.popleft()
 
     #se actualiza la posicion del agente, se agrega a la nueva celda y se elimina de la
     #anterior

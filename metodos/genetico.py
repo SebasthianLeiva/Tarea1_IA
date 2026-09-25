@@ -16,14 +16,13 @@ class Agente_genetico:
 
         # cromosoma
         self.movimientos = []
-        #120 movimientos para cada agente
-        #(volver a poner en 120)
+        #300 movimientos para cada agente
         inicializar_movimientos(self.movimientos, 300)
 
         self.pos_movimientos = 0
 
-        # calidad del individuo
-        self.fitness = fitness(self.mapa,self)
+        # calidad del cromosoma
+        self.fitness = 0
 
 
 
@@ -54,8 +53,6 @@ def iterar_genetico(agente):
     elif movimiento == "derecha":
         nueva_posicion = (x, y + 1)
 
-    elif movimiento == "esperar":
-        nueva_posicion = (x, y)
 
     nueva_x, nueva_y = nueva_posicion
 
@@ -156,8 +153,7 @@ def obtener_geneticos(mapa, padres):
 
 #evalua un agente haciendo que itere sobre un mapa con fuego
 def fitness(mapa, agente):
-
-    #se genera un mapa diferente para cada agente
+    # se genera un mapa diferente para cada agente
     mapa_prueba = copy.deepcopy(mapa)
 
     # Los mismos focos para todos los individuos
@@ -183,7 +179,7 @@ def fitness(mapa, agente):
         if salida is not None:
             break
 
-    contador_fuego = 0 #el fuego se propaga al llegar a 4
+    contador_fuego = 0  # el fuego se propaga al llegar a 4
 
     # simular los movimientos
     for movimiento in agente.movimientos:
@@ -212,6 +208,19 @@ def fitness(mapa, agente):
                 and 0 <= nueva_y < len(mapa[0])):
 
             penalizacion += 10
+            contador_fuego += 1
+            if contador_fuego == 4:
+                for fuego in fuegos:
+                    iteracionFuego(fuego)
+
+                contador_fuego = 0
+
+                # Si el fuego alcanzo la posición del agente
+                if mapa_prueba[posicion[0]][posicion[1]].fuego:
+                    penalizacion += 100
+                    agente.fitness = -1000 - penalizacion
+                    return agente.fitness
+
             continue
 
         celda = mapa_prueba[nueva_x][nueva_y]
@@ -219,14 +228,40 @@ def fitness(mapa, agente):
         # movimiento hacia un muro
         if celda.muro:
             penalizacion += 10
+            contador_fuego += 1
+            if contador_fuego == 4:
+                for fuego in fuegos:
+                    iteracionFuego(fuego)
+
+                contador_fuego = 0
+
+                # Si el fuego alcanzo la posición del agente
+                if mapa_prueba[posicion[0]][posicion[1]].fuego:
+                    penalizacion += 100
+                    agente.fitness = -1000 - penalizacion
+                    return agente.fitness
+
             continue
 
         # movimiento hacia el fuego
         if celda.fuego:
             penalizacion += 20
+            contador_fuego += 1
+            if contador_fuego == 4:
+                for fuego in fuegos:
+                    iteracionFuego(fuego)
+
+                contador_fuego = 0
+
+                # Si el fuego alcanzo la posicion del agente
+                if mapa_prueba[posicion[0]][posicion[1]].fuego:
+                    penalizacion += 100
+                    agente.fitness = -1000 - penalizacion
+                    return agente.fitness
+
             continue
 
-        # movimiento válido
+        # movimiento valido
         posicion = nueva_posicion
 
         # si llego a la salida
@@ -243,21 +278,18 @@ def fitness(mapa, agente):
 
             contador_fuego = 0
 
-            # Si el fuego alcanzó la posición del agente
+            # Si el fuego alcanzo la posición del agente
             if mapa_prueba[posicion[0]][posicion[1]].fuego:
                 penalizacion += 100
                 agente.fitness = -1000 - penalizacion
                 return agente.fitness
 
-
-
-    # si no llego a la salida, mientras más cerca quede mejor
+    # si no llego a la salida, mientras mas cerca quede mejor
     distancia = abs(posicion[0] - salida[0]) + abs(posicion[1] - salida[1])
 
     agente.fitness = 100 - distancia - penalizacion
 
     return agente.fitness
-
 
 
 
@@ -305,20 +337,19 @@ def crossover(lista_padres):
 def generar_hijo(padre1, padre2, cant_padre1):
 
     columnas = obtener_columnas()
-
     i = random.randint(0, len(columnas)-1)
 
-    posicion_inicial = (29,columnas[i])
+    posicion_inicial = (29, columnas[i])
 
     hijo = Agente_genetico(padre1.mapa, posicion_inicial)
 
     mitad_padre1 = padre1.movimientos[:cant_padre1]
     mitad_padre2 = padre2.movimientos[cant_padre1:]
 
-    hijo.movimientos.extend(mitad_padre1)
-    hijo.movimientos.extend(mitad_padre2)
+    hijo.movimientos = mitad_padre1 + mitad_padre2
 
     return hijo
+
 
 
 def mutacion(lista_hijos):

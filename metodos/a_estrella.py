@@ -66,22 +66,11 @@ class Agente_a_estrella:
 def iterar_a_estrella(agente):
 
     # se comprueba si el agente ha sido alcanzado por el fuego
+
+    # si fue alcanzado por fuego se retorna True y se cambia el estado del agente
     alcanzado_por_fuego = efecto_fuego(agente)
 
     if alcanzado_por_fuego:
-        return
-
-    # si no quedan posiciones por terminar el agente se da por muerto
-    # (no consiguio escapar dado que el fuego bloqueo la salida)
-    # y la iteracion termina
-    if not agente.frontera:
-        agente.finalizado = True
-        agente.vivo = False
-
-        # se elimina de su celda actual
-        x, y = agente.posicion_actual
-        agente.mapa[x][y].agentes.remove(agente)
-
         return
 
     numero_random = random.randint(1, 100)
@@ -91,14 +80,39 @@ def iterar_a_estrella(agente):
     if numero_random <= 5:
         return
 
+
     # se saca la tupla (casilla) de la frontera con menor costo
-    mejor_casilla = heapq.heappop(agente.frontera)
+    while agente.frontera:
 
-    f, costo_acumulado, _, nueva_celda, nueva_posicion= mejor_casilla
+        mejor_casilla = heapq.heappop(agente.frontera)
 
-    # si la posicion ya fue explorada se ignora esta ruta
-    if nueva_posicion in agente.explorados:
+        # si la casilla que se saco de la frontera esta incendiada (puede incendiarse
+        # mientras esta en la pq)
+        if (mejor_casilla[3].fuego == True):
+            continue
+
+        f, costo_acumulado, _, nueva_celda, nueva_posicion = mejor_casilla
+
+        # si la posicion ya fue explorada se descarta
+        if nueva_posicion in agente.explorados:
+            continue
+
+        else:
+            break
+
+    else:
+        # si no quedan posiciones por terminar el agente se da por muerto
+        # (no consiguio escapar dado que el fuego bloqueo la salida)
+        # y la iteracion termina
+
+        agente.finalizado = True
+        agente.vivo = False
+
+        x, y = agente.posicion_actual
+        agente.mapa[x][y].agentes.remove(agente)
+
         return
+
 
     # el agente se mueve a la celda de la frontera con menor costo
     mover(agente, nueva_posicion)
