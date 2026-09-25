@@ -23,7 +23,7 @@ class Metodo(Enum):
 
 
 
-def simulacion(matriz,metodo):
+def simulacion(matriz,metodo,imprimir):
 
     mapa = obtener_mapa(matriz) #mapa de celdas
 
@@ -38,15 +38,26 @@ def simulacion(matriz,metodo):
             agentes.append(agente(mapa, (29, posiciones_y[i])))
 
     else:
-        agentes = obtener_geneticos(mapa)
+        #cambiar por obtener_generacion_final (ver lo de los 5 agentes cambiados por 100)
 
+        agentes = obtener_generacion_final(mapa)
 
-    #4 focos de fuego
+        #se colocan en el mapa
+        for agente in agentes:
+            x, y = agente.posicion_actual
+            mapa[x][y].agentes.append(agente)
+
 
     fuegos = []
 
-    for i in range(5): #se insertan los 5 focos de fuego en la lista
-        fuegos.append(Fuego(mapa,(random.randint(2, 27), random.randint(2, 27))))
+    #2 focos de fuego con las esquinas inferiores del mapa como pos_inicial
+    fuegos.append(Fuego(mapa, (29, 0)))
+    fuegos.append(Fuego(mapa, (29, 29)))
+
+    #ANTIGUO
+    #for i in range(5): #se insertan los 5 focos de fuego en la lista
+     #   fuegos.append(Fuego(mapa,(random.randint(2, 27), random.randint(2, 27))))
+
 
 
     # lleva la cuenta de la cantidad de turnos que ha durado la simulacion
@@ -66,9 +77,10 @@ def simulacion(matriz,metodo):
     #ciclo de la simulacion
     while True:
 
-        print("\n##############################", flush=True)
+        if(imprimir == True):
+            print("\n##############################", flush=True)
 
-        print("turno: " , turnos_simulacion)
+            print("turno: ", turnos_simulacion)
 
 
         if (turnos_fuego == 0):
@@ -115,23 +127,23 @@ def simulacion(matriz,metodo):
                     if agente not in supervivientes:
                         supervivientes.append((agente,turnos_simulacion))
 
+        if(imprimir==True):
+
+            for i, agente in enumerate(agentes):
+                print(
+                    i,
+                    "pos:", agente.posicion_actual,
+                    "finalizado:", agente.finalizado,
+                    "vivo:", agente.vivo
+                )
+
+            imprimir_matriz(mapa)
+
+            print("\nnumero de agentes finalizados: " + str(numero_finalizados))
+
+            print("numero de agentes supervivientes: " + str(numero_supervivientes) + "\n")
 
 
-        for i, agente in enumerate(agentes):
-            print(
-                i,
-                "pos:", agente.posicion_actual,
-                "finalizado:", agente.finalizado,
-                "vivo:", agente.vivo
-            )
-
-
-
-        imprimir_matriz(mapa)
-
-        print("\nnumero de agentes finalizados: " + str(numero_finalizados))
-
-        print("numero de agentes supervivientes: " + str(numero_supervivientes) + "\n")
 
         if numero_finalizados == 5:
 

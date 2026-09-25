@@ -1,6 +1,8 @@
 
 import random
 from metodos.general.agente import *
+import copy
+from metodos.general.fuego import Fuego, iteracionFuego
 
 class Agente_genetico:
 
@@ -15,7 +17,8 @@ class Agente_genetico:
         # cromosoma
         self.movimientos = []
         #120 movimientos para cada agente
-        inicializar_movimientos(self.movimientos, 120)
+        #(volver a poner en 120)
+        inicializar_movimientos(self.movimientos, 300)
 
         self.pos_movimientos = 0
 
@@ -90,37 +93,80 @@ def iterar_genetico(agente):
 
         return
 
+#itera 10 veces obtener_geneticos() para retornar los 5 mejores agentes resultantes de
+# las 10 generaciones
+
+def obtener_generacion_final(mapa):
+
+    padres = obtener_geneticos(mapa,[])
+
+    generacion = 1
+
+    while generacion !=11:
+
+        hijos = obtener_geneticos(mapa,padres)
+        padres = hijos
+        generacion+=1
+
+    padres.sort(key=lambda agente: agente.fitness, reverse=True)
+
+    return padres[:5]
 
 
 
 
-#retorna 5 agentes resultantes del algoritmo genetico
-def obtener_geneticos(mapa):
+#retorna una generacion de 100 agentes resultantes del algoritmo genetico
+def obtener_geneticos(mapa, padres):
 
-    agentes = []
-    columnas = obtener_columnas()
+    agentes = padres
 
-    i=0
-    while i!= 100:
-        agentes.append(Agente_genetico(mapa,(29,columnas[i])))
-        i+=1
+    if(len(padres) == 0): #si es la primera generacion se crean los padres
 
-    #se obtienen los 10 agentes con mejor fitness
+        columnas = obtener_columnas()
+
+        i = 0
+        while i != 100:
+            agentes.append(Agente_genetico(mapa, (29, columnas[i])))
+            i += 1
+
+
+    #se obtienen los 20 agentes con mejor fitness
     agentes_seleccionados = seleccion(agentes)
 
-    #se obtienen 5 hijos salidos de la cruza de los 10 agentes con mejor fitness
+    #se obtienen 80 hijos salidos de la cruza de los 20 agentes con mejor fitness
     hijos = crossover(agentes_seleccionados)
 
     #con baja probabilidad se muta a algunos de los hijos
     mutacion(hijos)
+
+    #se recalcula el fitness de los hijos
+    for hijo in hijos:
+        hijo.fitness = fitness(mapa,hijo)
+
+    # se agregan los 20 mejores padres a los hijos tambien (para no perder buenos agentes)
+    j = 0
+    while j != 20:
+        hijos.append(agentes_seleccionados[j])
+        j += 1
 
     return hijos
 
 
 
 
-#evalua un agente
+#evalua un agente haciendo que itere sobre un mapa con fuego
 def fitness(mapa, agente):
+
+    #se genera un mapa diferente para cada agente
+    mapa_prueba = copy.deepcopy(mapa)
+
+    # Los mismos focos para todos los individuos
+    fuegos = [
+        Fuego(mapa_prueba, (29, 0)),
+        Fuego(mapa_prueba, (29, 29))
+    ]
+
+    ####
 
     posicion = agente.posicion_actual
     penalizacion = 0
@@ -136,6 +182,8 @@ def fitness(mapa, agente):
 
         if salida is not None:
             break
+
+    contador_fuego = 0 #el fuego se propaga al llegar a 4
 
     # simular los movimientos
     for movimiento in agente.movimientos:
@@ -166,7 +214,7 @@ def fitness(mapa, agente):
             penalizacion += 10
             continue
 
-        celda = mapa[nueva_x][nueva_y]
+        celda = mapa_prueba[nueva_x][nueva_y]
 
         # movimiento hacia un muro
         if celda.muro:
@@ -186,6 +234,23 @@ def fitness(mapa, agente):
             agente.fitness = 1000 - penalizacion
             return agente.fitness
 
+        contador_fuego += 1
+
+        # Cada 4 movimientos se propaga el fuego
+        if contador_fuego == 4:
+            for fuego in fuegos:
+                iteracionFuego(fuego)
+
+            contador_fuego = 0
+
+            # Si el fuego alcanzó la posición del agente
+            if mapa_prueba[posicion[0]][posicion[1]].fuego:
+                penalizacion += 100
+                agente.fitness = -1000 - penalizacion
+                return agente.fitness
+
+
+
     # si no llego a la salida, mientras más cerca quede mejor
     distancia = abs(posicion[0] - salida[0]) + abs(posicion[1] - salida[1])
 
@@ -202,7 +267,7 @@ def seleccion(lista_agentes):
 
     lista_agentes.sort(key=lambda agente: agente.fitness, reverse=True)
 
-    return lista_agentes[:10]
+    return lista_agentes[:20]
 
 
 
@@ -210,26 +275,26 @@ def crossover(lista_padres):
 
     hijos = []
 
-    for i in range(0,5):
+    for i in range(0,80):
         padre1, padre2 = random.sample(lista_padres, 2) #se elijen 2 distintos
 
         numero = random.randint(1, 3)
 
         if numero==1:
 
-            #el hijo adquiere los 20 primeros movimientos del padre 1 y los 40 ultimos del
+            #el hijo adquiere los 40 primeros movimientos del padre 1 y el resto del
             # padre 2 y es insertado en la lista de hijos
-            hijos.append(generar_hijo(padre1,padre2,20))
+            hijos.append(generar_hijo(padre1,padre2,100))
 
         elif numero==2:
-            # el hijo adquiere los primeros 30 del 1 y el resto del 2
+            # el hijo adquiere los primeros 60 del 1 y el resto del 2
             # padre 2 y es insertado en la lista de hijos
-            hijos.append(generar_hijo(padre1,padre2,30))
+            hijos.append(generar_hijo(padre1,padre2,150))
 
         elif numero == 3:
-            # el hijo adquiere los primeros 40 del 1 y el resto del 2
+            # el hijo adquiere los primeros 80 del 1 y el resto del 2
             # padre 2 y es insertado en la lista de hijos
-            hijos.append(generar_hijo(padre1, padre2, 40))
+            hijos.append(generar_hijo(padre1, padre2, 200))
 
     return hijos
 
@@ -239,17 +304,19 @@ def crossover(lista_padres):
 #coloca parte de los movimientos de ambos padres en el hijo y lo retorna
 def generar_hijo(padre1, padre2, cant_padre1):
 
-    hijo = Agente_genetico(padre1.mapa, (padre1.posicion_actual))
+    columnas = obtener_columnas()
+
+    i = random.randint(0, len(columnas)-1)
+
+    posicion_inicial = (29,columnas[i])
+
+    hijo = Agente_genetico(padre1.mapa, posicion_inicial)
 
     mitad_padre1 = padre1.movimientos[:cant_padre1]
     mitad_padre2 = padre2.movimientos[cant_padre1:]
 
     hijo.movimientos.extend(mitad_padre1)
     hijo.movimientos.extend(mitad_padre2)
-
-    # se agrega el agente a su celda inicial del mapa
-    x, y = padre1.posicion_actual
-    hijo.mapa[x][y].agentes.append(hijo)
 
     return hijo
 

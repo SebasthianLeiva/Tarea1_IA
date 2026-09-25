@@ -35,7 +35,7 @@ def benchmark():
 
             for i in range(200):
 
-                num_vivos, cant_turnos = simulacion(mapa(), metodo)
+                num_vivos, cant_turnos = simulacion(mapa(), metodo,False)
 
                 # tasa de supervivencia de esta ejecucion
                 tasa = num_vivos / total_agentes
