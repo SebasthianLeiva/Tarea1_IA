@@ -99,7 +99,7 @@ def obtener_generacion_final(mapa):
 
     generacion = 1
 
-    while generacion !=11:
+    while generacion !=10:
 
         hijos = obtener_geneticos(mapa,padres)
         padres = hijos
@@ -123,7 +123,13 @@ def obtener_geneticos(mapa, padres):
 
         i = 0
         while i != 100:
-            agentes.append(Agente_genetico(mapa, (29, columnas[i])))
+
+            agente = Agente_genetico(mapa, (29, columnas[i]))
+
+            # se calcula el fitness de la primera generacion
+            agente.fitness = fitness(mapa, agente)
+
+            agentes.append(agente)
             i += 1
 
 
@@ -288,6 +294,7 @@ def fitness(mapa, agente):
     distancia = abs(posicion[0] - salida[0]) + abs(posicion[1] - salida[1])
 
     agente.fitness = 100 - distancia - penalizacion
+
 
     return agente.fitness
 
