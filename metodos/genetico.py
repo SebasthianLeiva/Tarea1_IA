@@ -9,6 +9,7 @@ class Agente_genetico:
     def __init__(self, mapa, posicion_inicial):
 
         self.mapa = mapa
+        self.posicion_inicial = posicion_inicial
         self.posicion_actual = posicion_inicial
 
         self.finalizado = False
@@ -90,41 +91,35 @@ def iterar_genetico(agente):
 
         return
 
-#itera 10 veces obtener_geneticos() para retornar los 5 mejores agentes resultantes de
-# las 10 generaciones
+# retorna los 80 mejores agentes resultantes
 
-def obtener_generacion_final(mapa):
+def obtener_generacion_final(posiciones,mapa):
 
-    padres = obtener_geneticos(mapa,[])
+    padres = obtener_geneticos(mapa,[],posiciones)
 
-    generacion = 1
-
-    while generacion !=10:
-
-        hijos = obtener_geneticos(mapa,padres)
-        padres = hijos
-        generacion+=1
+    hijos = obtener_geneticos(mapa,padres,posiciones)
+    padres = hijos
 
     padres.sort(key=lambda agente: agente.fitness, reverse=True)
 
-    return padres[:5]
+    return padres[:80]
 
 
 
 
 #retorna una generacion de 100 agentes resultantes del algoritmo genetico
-def obtener_geneticos(mapa, padres):
+def obtener_geneticos(mapa, padres,posiciones):
 
     agentes = padres
 
     if(len(padres) == 0): #si es la primera generacion se crean los padres
 
-        columnas = obtener_columnas()
-
         i = 0
         while i != 100:
 
-            agente = Agente_genetico(mapa, (29, columnas[i]))
+            posicion = posiciones[i % len(posiciones)]
+
+            agente = Agente_genetico(mapa, posicion)
 
             # se calcula el fitness de la primera generacion
             agente.fitness = fitness(mapa, agente)
@@ -343,10 +338,7 @@ def crossover(lista_padres):
 #coloca parte de los movimientos de ambos padres en el hijo y lo retorna
 def generar_hijo(padre1, padre2, cant_padre1):
 
-    columnas = obtener_columnas()
-    i = random.randint(0, len(columnas)-1)
-
-    posicion_inicial = (29, columnas[i])
+    posicion_inicial = padre1.posicion_inicial
 
     hijo = Agente_genetico(padre1.mapa, posicion_inicial)
 

@@ -12,7 +12,7 @@ def main():
    #Pruebe cambiando el mapa y el metodo correspondiente al 1er y 2do argumento
    #respectivamente.
 
-   #simulacion(densidad_media(),Metodo.GENETICO,True)
+   #simulacion(alta_densidad(),Metodo.BFS,True)
 
 main()
 

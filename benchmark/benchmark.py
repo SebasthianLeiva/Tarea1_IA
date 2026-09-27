@@ -24,7 +24,7 @@ def benchmark():
     ]
 
 
-    total_agentes = 5
+    total_agentes = 80
 
     for nombre_mapa, mapa in mapas:
 

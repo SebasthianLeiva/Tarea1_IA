@@ -25,22 +25,26 @@ class Metodo(Enum):
 
 def simulacion(matriz,metodo,imprimir):
 
+    cant_agentes = 80
+
     mapa = obtener_mapa(matriz) #mapa de celdas
 
     agente,iteracion = obtener_metodo(metodo)
 
     if agente != Agente_genetico:
-        posiciones_y = obtener_columnas()  #posiciones en y de los agentes
+
+        posiciones = obtener_posiciones(mapa)
 
         agentes = []  # lista de agentes
 
-        for i in range(5):  # se insertan los 5 agentes en la lista
-            agentes.append(agente(mapa, (29, posiciones_y[i])))
+        for i in range(cant_agentes):  # se insertan los 80 agentes en la lista
+            agentes.append(agente(mapa, posiciones[i]))
 
     else:
-        #cambiar por obtener_generacion_final (ver lo de los 5 agentes cambiados por 100)
 
-        agentes = obtener_generacion_final(mapa)
+        posiciones = obtener_posiciones(mapa)
+
+        agentes = obtener_generacion_final(posiciones,mapa)
 
         #se colocan en el mapa
         for agente in agentes:
@@ -53,10 +57,6 @@ def simulacion(matriz,metodo,imprimir):
     #2 focos de fuego con las esquinas inferiores del mapa como pos_inicial
     fuegos.append(Fuego(mapa, (29, 0)))
     fuegos.append(Fuego(mapa, (29, 29)))
-
-    #ANTIGUO
-    #for i in range(5): #se insertan los 5 focos de fuego en la lista
-     #   fuegos.append(Fuego(mapa,(random.randint(2, 27), random.randint(2, 27))))
 
 
 
@@ -105,7 +105,7 @@ def simulacion(matriz,metodo,imprimir):
         turnos_simulacion += 1
 
 
-        #se cuenta la cantidad de agentes finalizados, si finalizaron los 5
+        #se cuenta la cantidad de agentes finalizados, si finalizaron los 80
         #la simulacion termina
 
         numero_finalizados = 0
@@ -145,7 +145,7 @@ def simulacion(matriz,metodo,imprimir):
 
 
 
-        if numero_finalizados == 5:
+        if numero_finalizados == cant_agentes:
 
             if(supervivientes):
                 # se retorna el numero de supervivientes y los turnos que le tomo al ultimo
@@ -155,6 +155,7 @@ def simulacion(matriz,metodo,imprimir):
             else:
 
                 return 0, 0
+
 
         #input()
 
@@ -189,22 +190,26 @@ def obtener_metodo(metodo):
 
 
 
-# retorna una lista con las posiciones de inicio de los 5 agentes,
-# de esta forma no se repiten posiciones y hay variacion en el
-# comportamiento de los algoritmos
 
-def obtener_columnas():
 
-    columnas = []
+#recorre el mapa de derecha a izquierda de abajo hacia arriba y retorna un arreglo con
+# posiciones validas para que los agentes inicien
 
-    while len(columnas) != 5:
+def obtener_posiciones(mapa):
 
-        columna = random.randint(2, 28)
+    posiciones = []
 
-        if columna not in columnas:
-                columnas.append(columna)
+    for i in range(len(mapa) - 1, -1, -1):
+        for j in range(len(mapa[0]) - 1, -1, -1):
 
-    return columnas
+            if mapa[i][j].costo_base != 0 and mapa[i][j].costo_base != 6:
+                posiciones.append((i, j))
+
+                if len(posiciones) == 80:
+                    return posiciones
+
+
+
 
 
 
