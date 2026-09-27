@@ -58,7 +58,6 @@ def main():
          print("")
 
          simulacion(mapa, metodo, True)
-         break
 
 
       elif opcion == "3":
