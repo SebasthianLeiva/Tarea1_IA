@@ -10,9 +10,9 @@ Python 3.14.7
 
 ## Instrucciones de ejecucion:
 
--Abrir una terminal en la carpeta raiz del proyecto.
-.Ejecutar: python main.py
--Elejir entre el benchmark y una simulacion individual de un algoritmo y mapa determinados
+1. Abrir una terminal en la carpeta raiz del proyecto.
+2. Ejecutar: python main.py
+3. Elejir entre el benchmark y una simulacion individual de un algoritmo y mapa determinados
 
 
 ## Nota: 
