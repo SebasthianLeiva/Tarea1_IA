@@ -7,6 +7,8 @@ from metodos.DFS import*
 from metodos.greedyBFS import*
 from metodos.a_estrella import *
 from metodos.genetico import *
+import os
+
 
 from enum import Enum
 import random
@@ -77,11 +79,6 @@ def simulacion(matriz,metodo,imprimir):
     #ciclo de la simulacion
     while True:
 
-        if(imprimir == True):
-            print("\n##############################", flush=True)
-
-            print("turno: ", turnos_simulacion)
-
 
         if (turnos_fuego == 0):
             for fuego in fuegos: #cada foco de fuego hace una iteracion
@@ -129,19 +126,12 @@ def simulacion(matriz,metodo,imprimir):
 
         if(imprimir==True):
 
-            for i, agente in enumerate(agentes):
-                print(
-                    i,
-                    "pos:", agente.posicion_actual,
-                    "finalizado:", agente.finalizado,
-                    "vivo:", agente.vivo
-                )
-
+            os.system("cls")
             imprimir_matriz(mapa)
 
-            print("\nnumero de agentes finalizados: " + str(numero_finalizados))
-
-            print("numero de agentes supervivientes: " + str(numero_supervivientes) + "\n")
+            print("Turno:", turnos_simulacion)
+            print("Numero de agentes finalizados:", numero_finalizados)
+            print("Numero de agentes supervivientes:", numero_supervivientes)
 
 
 
